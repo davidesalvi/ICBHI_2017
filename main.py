@@ -2,12 +2,14 @@ import argparse
 import logging
 import time
 from pathlib import Path
+import numpy as np
+import pandas as pd
 
 from sklearn.model_selection import train_test_split
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 
-from src.model import ResNet_MelSpec, ResNet_LogSpec, ResNet_MFCC, ResNet_LFCC
+from src.model import *
 from src.training_utils import *
 from src.utils import *
 
@@ -20,18 +22,13 @@ def main(config, device):
     logger.info('Set up the model...')
 
     if config['binary_classification']:
-        config['model_name'] = f"RESNET_binary_{config['feature_set']}_{config['win_len']}sec.pth"
+        config['model_name'] = f"{config['model_arch']}_binary_{config['feature_set']}_{config['win_len']}sec.pth"
         config['num_classes'] = 2
     else:
-        config['model_name'] = f"RESNET_multi_{config['feature_set']}_{config['win_len']}sec.pth"
+        config['model_name'] = f"{config['model_arch']}_multi_{config['feature_set']}_{config['win_len']}sec.pth"
         config['num_classes'] = 8
 
-    models_dict = {
-        'MelSpec': ResNet_MelSpec,
-        'LogSpec': ResNet_LogSpec,
-        'MFCC': ResNet_MFCC,
-        'LFCC': ResNet_LFCC
-    }
+    models_dict = {'MelSpec': MelSpec_model, 'LogSpec': LogSpec_model, 'MFCC': MFCC_model, 'LFCC': LFCC_model}
 
     if models_dict.get(config['feature_set']) is not None:
         model = models_dict.get(config['feature_set'])(config)
@@ -114,7 +111,8 @@ def main(config, device):
         best_acc = 0
         best_loss = 100
         early_stopping = 0
-        writer = SummaryWriter(log_dir=config['tensorboard_logdir'])
+        writer = SummaryWriter(log_dir=config['tensorboard_logdir'],
+                               filename_suffix=f"{config['model_arch']}_multi_{config['feature_set']}_{config['win_len']}sec")
 
         for epoch in range(config['num_epochs']):
             if early_stopping < config['early_stopping']:
@@ -182,7 +180,8 @@ def main(config, device):
 if __name__ == '__main__':
 
     args = argparse.ArgumentParser()
-    args.add_argument('--feature_set', type=str, default='MelSpec', help='Feature set to use for training')
+    args.add_argument('--feature_set', type=str, default='MelSpec', help='Feature set to use as input', choices=['MelSpec', 'LogSpec', 'MFCC', 'LFCC'])
+    args.add_argument('--model_arch', type=str, default='LCNN', help='Model architecture', choices=['ResNet', 'LCNN'])
     args.add_argument('--train_model', type=bool, default=True)
     args.add_argument('--eval_model', type=bool, default=True)
     args.add_argument('--binary_classification', type=bool, default=True, help='Binary or multi-class classification')
@@ -194,6 +193,7 @@ if __name__ == '__main__':
     config = read_yaml(config_path)
 
     config['feature_set'] = args.feature_set
+    config['model_arch'] = args.model_arch
     config['train_model'] = args.train_model
     config['eval_model'] = args.eval_model
     config['binary_classification'] = args.binary_classification
