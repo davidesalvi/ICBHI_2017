@@ -1,0 +1,35 @@
+---
+
+seed: 1234
+
+# DATASET PATHS
+partition_file: 'data/ICBHI_challenge_train_test.txt'
+diagnosis_file: 'data/ICBHI_Challenge_diagnosis.txt'
+dataset_folder: 'data/ICBHI_final_database'
+
+save_model_folder: 'checkpoints/'
+save_results_folder: 'results/'
+tensorboard_logdir: 'tensorboard/'
+
+# AUDIO PARAMETERS
+win_len: 5.0
+sample_rate: 44100
+n_fft: 2048
+win_length_val: 0.025
+hop_length_val: 0.01
+n_mels: 80
+n_mfcc: 40
+n_lfcc: 40
+n_filter: 128
+
+# TRAINING PARAMETERS
+batch_size: 64
+eval_batch_size: 1
+num_epochs: 150
+early_stopping: 10
+num_workers: 4
+
+lr: 0.0001
+weight_decay: 0.0001
+T_max: 100
+eta_min: 0.00001
