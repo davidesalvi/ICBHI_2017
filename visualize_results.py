@@ -83,7 +83,30 @@ def visualize_results():
             plt.close()
 
 
+    result_dir = '/nas/home/dsalvi/ICBHI_2017/results'
+    feature_sets = ['MelSpec', 'LogSpec', 'MFCC', 'LFCC']
+    classification_types = ['multi', 'binary']
+    durations = ['5.0', '10.0']
 
+    for feature in feature_sets:
+        for classification in classification_types:
+            for duration in durations:
+
+
+                result_name = f"RESNET_{classification}_{feature}_{duration}sec.txt"
+                results = pd.read_csv(os.path.join(result_dir, result_name), sep=' ', header=None)
+                results.columns = ['filename', 'pred', 'label']
+
+                print(f"{feature}, {classification}, {duration} - Bal.Acc.: {balanced_accuracy_score(results['label'], results['pred'])*100:.2f}")
+        print()
+
+                # plot_confusion_matrix(results['label'], results['pred'], normalize=True, label_dict=label_dict)
+                #
+                # y_true = results[0].values
+                # y_pred = results[1].values
+                # plot_confusion_matrix(y_true, y_pred, normalize=True)
+                # plt.savefig(f"{model_name.split('.')[0]}.png")
+                # plt.close()
 
 
 if __name__ == '__main__':
