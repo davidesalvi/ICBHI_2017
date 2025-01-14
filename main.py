@@ -1,23 +1,15 @@
-import torch
-import torch.nn.functional as F
-from torch.utils.data import DataLoader
-from pathlib import Path
-from torchvision.models import resnet18
-import torch.nn as nn
 import argparse
-import torchaudio
-import os
-from torch.utils.tensorboard import SummaryWriter
-import numpy as np
-import pandas as pd
-from sklearn.model_selection import train_test_split
-
-from src.utils import *
-from src.training_utils import *
-from src.model import ResNet_MelSpec, ResNet_LogSpec, ResNet_MFCC, ResNet_LFCC
-
 import logging
 import time
+from pathlib import Path
+
+from sklearn.model_selection import train_test_split
+from torch.utils.data import DataLoader
+from torch.utils.tensorboard import SummaryWriter
+
+from src.model import ResNet_MelSpec, ResNet_LogSpec, ResNet_MFCC, ResNet_LFCC
+from src.training_utils import *
+from src.utils import *
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
@@ -28,10 +20,10 @@ def main(config, device):
     logger.info('Set up the model...')
 
     if config['binary_classification']:
-        config['model_name'] = f"RESNET_binary_{config['feature_set']}.pth"
+        config['model_name'] = f"RESNET_binary_{config['feature_set']}_{config['win_len']}sec.pth"
         config['num_classes'] = 2
     else:
-        config['model_name'] = f"RESNET_multi_{config['feature_set']}.pth"
+        config['model_name'] = f"RESNET_multi_{config['feature_set']}_{config['win_len']}sec.pth"
         config['num_classes'] = 8
 
     models_dict = {
@@ -182,8 +174,9 @@ def main(config, device):
                                  num_workers=config['num_workers'])
         del eval_set, d_label_eval
 
-        eval_model(model, eval_loader, os.path.join(config['save_results_folder'], config['result_path']), device)
-
+        save_path = os.path.join(config['save_results_folder'], config['result_path'])
+        eval_model(model, eval_loader, save_path, device)
+        logger.info(f'Scores saved to {save_path}')
 
 
 if __name__ == '__main__':
@@ -206,21 +199,8 @@ if __name__ == '__main__':
     config['binary_classification'] = args.binary_classification
 
     seed_everything(config['seed'])
-    device = 'cuda:2' if torch.cuda.is_available() else 'cpu'
+    device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
-    # main(config, device)
-
-    config['binary_classification'] = False
-
-    config['feature_set'] = 'LogSpec'
     main(config, device)
 
-    config['feature_set'] = 'MFCC'
-    main(config, device)
-
-    config['feature_set'] = 'LFCC'
-    main(config, device)
-
-    config['feature_set'] = 'MelSpec'
-    main(config, device)
 

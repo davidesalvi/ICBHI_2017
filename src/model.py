@@ -1,10 +1,8 @@
 import torch
-from torchvision.models import resnet18
 import torch.nn as nn
 import torchaudio
-import torchvision
-from torchvision.transforms import v2
 import torchaudio.transforms as T
+from torchvision.models import resnet18
 
 
 def modify_for_grayscale(model):
@@ -26,6 +24,7 @@ def modify_for_grayscale(model):
 
     model.conv1 = new_first_conv_layer
     return model
+
 
 class ResNet_MelSpec(nn.Module):
     def __init__(self, config):

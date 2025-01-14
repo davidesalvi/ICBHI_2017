@@ -1,13 +1,11 @@
-import torch
-from torch.utils.data import Dataset
-from torch import Tensor
-
-import numpy as np
-import pandas as pd
 import random
+
 import librosa
+import numpy as np
+import torch
+from torch import Tensor
+from torch.utils.data import Dataset
 from tqdm import tqdm
-import os
 
 
 def pad(x, max_len):
@@ -21,8 +19,6 @@ def pad(x, max_len):
 
 class LoadTrainData(Dataset):
     def __init__(self, list_IDs, labels, win_len, fs=44100):
-        '''self.list_IDs	: list of strings (each string: utt key),
-           self.labels      : dictionary (key: utt key, value: label integer)'''
 
         self.list_IDs = list_IDs
         self.labels = labels
@@ -187,5 +183,4 @@ def eval_model(model, data_loader, save_path, device):
             for f, pred, lab in zip(fname_list, pred_list, label_list):
                 fh.write('{} {} {}\n'.format(f, pred, lab))
         fh.close()
-    print('Scores saved to {}'.format(save_path))
 

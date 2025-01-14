@@ -1,13 +1,11 @@
 import os
-import torch
 import random
-import GPUtil
-import yaml
-import matplotlib.pyplot as plt
+
 import numpy as np
-from sklearn.metrics import roc_curve, auc, confusion_matrix
-import pandas as pd
+import torch
 import torch.nn as nn
+import yaml
+
 
 def seed_everything(seed: int):
     """
