@@ -183,7 +183,7 @@ if __name__ == '__main__':
     args = argparse.ArgumentParser()
     args.add_argument('--feature_set', type=str, default='MelSpec', help='Feature set to use as input', choices=['MelSpec', 'LogSpec', 'MFCC', 'LFCC'])
     args.add_argument('--model_arch', type=str, default='ResNet', help='Model architecture', choices=['ResNet', 'LCNN'])
-    args.add_argument('--train_model', type=bool, default=False)
+    args.add_argument('--train_model', type=bool, default=True)
     args.add_argument('--eval_model', type=bool, default=True)
     args.add_argument('--binary_classification', type=bool, default=False, help='Binary or multi-class classification')
     args.add_argument('--win_len', type=float, default=5.0, help='Length of the audio window to be analyzed (s)')
@@ -205,5 +205,3 @@ if __name__ == '__main__':
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
     main(config, device)
-
-
