@@ -11,6 +11,7 @@ Here are the main components of this repository:
 
 - `main.py`: The core script that handles model setup, dataset loading, training, and evaluation.
 - `visualize_results.py`: A script to visualize the evaluation results of the trained models.
+- `test_code.py`: A script to run a simple test to check if the code is working correctly and plot a ROC curve of the classification results.
 - `src/`: A folder containing the source code for the models, training, and feature extraction.
 - `config/`: A folder containing configuration files for the models and training.
 - `requirements.txt`: A txt file listing all the dependencies needed to run the project.
@@ -33,4 +34,10 @@ Example:
 
 ```bash
 python main.py --feature_set MelSpec --model_arch ResNet --train_model True --eval_model True --classification_type binary --win_len 5.0
+```
+
+To run the test code, simply download the repository and run the following command:
+
+```bash
+python test_code.py
 ```

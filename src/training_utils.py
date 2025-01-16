@@ -173,7 +173,7 @@ def eval_model(model, data_loader, save_path, device, config):
         batch_out = batch_out.mean(dim=0).detach().cpu().numpy()
 
         if config['classification_type'] == 'binary':
-            batch_pred = batch_out[1]
+            batch_pred = batch_out[0]
         elif config['classification_type'] == 'multi':
             batch_pred = int(batch_out.argmax())
 
