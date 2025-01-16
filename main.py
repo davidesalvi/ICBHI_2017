@@ -22,10 +22,10 @@ def main(config, device):
     logger.info('Set up the model...')
 
     if config['binary_classification']:
-        config['model_name'] = f"{config['model_arch']}_binary_{config['feature_set']}_{config['win_len']}sec.pth"
+        config['model_name'] = f"{config['model_arch'].upper()}_binary_{config['feature_set']}_{config['win_len']}sec.pth"
         config['num_classes'] = 2
     else:
-        config['model_name'] = f"{config['model_arch']}_multi_{config['feature_set']}_{config['win_len']}sec.pth"
+        config['model_name'] = f"{config['model_arch'].upper()}_multi_{config['feature_set']}_{config['win_len']}sec.pth"
         config['num_classes'] = 8
 
     models_dict = {'MelSpec': MelSpec_model, 'LogSpec': LogSpec_model, 'MFCC': MFCC_model, 'LFCC': LFCC_model}
@@ -173,7 +173,8 @@ def main(config, device):
         del eval_set, d_label_eval
 
         save_path = os.path.join(config['save_results_folder'], config['result_path'])
-        eval_model(model, eval_loader, save_path, device)
+        eval_model(model, eval_loader, save_path, device, config)
+
         logger.info(f'Scores saved to {save_path}')
 
 
@@ -181,10 +182,11 @@ if __name__ == '__main__':
 
     args = argparse.ArgumentParser()
     args.add_argument('--feature_set', type=str, default='MelSpec', help='Feature set to use as input', choices=['MelSpec', 'LogSpec', 'MFCC', 'LFCC'])
-    args.add_argument('--model_arch', type=str, default='LCNN', help='Model architecture', choices=['ResNet', 'LCNN'])
-    args.add_argument('--train_model', type=bool, default=True)
+    args.add_argument('--model_arch', type=str, default='ResNet', help='Model architecture', choices=['ResNet', 'LCNN'])
+    args.add_argument('--train_model', type=bool, default=False)
     args.add_argument('--eval_model', type=bool, default=True)
-    args.add_argument('--binary_classification', type=bool, default=True, help='Binary or multi-class classification')
+    args.add_argument('--binary_classification', type=bool, default=False, help='Binary or multi-class classification')
+    args.add_argument('--win_len', type=float, default=5.0, help='Length of the audio window to be analyzed (s)')
     args = args.parse_args()
 
     this_folder = Path(__file__).parent
@@ -197,6 +199,7 @@ if __name__ == '__main__':
     config['train_model'] = args.train_model
     config['eval_model'] = args.eval_model
     config['binary_classification'] = args.binary_classification
+    config['win_len'] = args.win_len
 
     seed_everything(config['seed'])
     device = 'cuda' if torch.cuda.is_available() else 'cpu'

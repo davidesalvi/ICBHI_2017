@@ -44,7 +44,7 @@ class LCNN(nn.Module):
         self.batchnorm31 = nn.BatchNorm1d(64)
         self.dropout2 = nn.Dropout(0.7)
         self.fc32 = nn.Linear(64, config['num_classes'])
-        self.softmax = nn.Softmax(dim=config['num_classes'])
+        self.softmax = nn.Softmax(dim=1)
 
     def mfm2(self, x):
         out1, out2 = torch.chunk(x, 2, 1)
@@ -98,7 +98,8 @@ class LCNN(nn.Module):
         x = x.view(-1, 32 * 16 * 8)
         x = self.mfm2((self.fc29(x)))
         x = self.batchnorm31(x)
-        output = self.fc32(x)
+        x = self.fc32(x)
+        output = self.softmax(x)
         return output
 
 
@@ -149,7 +150,8 @@ class MelSpec_model(nn.Module):
                 nn.Dropout(p=0.5, inplace=True),
                 nn.Linear(num_ftrs, 256, bias=True),
                 nn.ReLU(),
-                nn.Linear(256, config['num_classes'])
+                nn.Linear(256, config['num_classes']),
+                nn.Softmax(dim=1)
             )
         else:
             self.model = LCNN(config)
@@ -186,7 +188,8 @@ class LogSpec_model(nn.Module):
                 nn.Dropout(p=0.5, inplace=True),
                 nn.Linear(num_ftrs, 256, bias=True),
                 nn.ReLU(),
-                nn.Linear(256, config['num_classes'])
+                nn.Linear(256, config['num_classes']),
+                nn.Softmax(dim=1)
             )
         else:
             self.model = LCNN(config)
@@ -227,7 +230,8 @@ class MFCC_model(nn.Module):
                 nn.Dropout(p=0.5, inplace=True),
                 nn.Linear(num_ftrs, 256, bias=True),
                 nn.ReLU(),
-                nn.Linear(256, config['num_classes'])
+                nn.Linear(256, config['num_classes']),
+                nn.Softmax(dim=1)
             )
         else:
             self.model = LCNN(config)
@@ -272,7 +276,8 @@ class LFCC_model(nn.Module):
                 nn.Dropout(p=0.5, inplace=True),
                 nn.Linear(num_ftrs, 256, bias=True),
                 nn.ReLU(),
-                nn.Linear(256, config['num_classes'])
+                nn.Linear(256, config['num_classes']),
+                nn.Softmax(dim=1)
             )
         else:
             self.model = LCNN(config)

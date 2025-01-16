@@ -12,7 +12,6 @@ save_results_folder: 'results/'
 tensorboard_logdir: 'tensorboard/'
 
 # AUDIO PARAMETERS
-win_len: 5.0
 sample_rate: 44100
 n_fft: 2048
 win_length_val: 0.025

@@ -156,7 +156,7 @@ def valid_epoch(data_loader, model, criterion, device):
     return running_loss, valid_accuracy
 
 
-def eval_model(model, data_loader, save_path, device):
+def eval_model(model, data_loader, save_path, device, config):
 
     model.eval()
 
@@ -172,8 +172,10 @@ def eval_model(model, data_loader, save_path, device):
         batch_out = model(batch_x)
         batch_out = batch_out.mean(dim=0).detach().cpu().numpy()
 
-        batch_pred = batch_out.argmax()
-        batch_pred = int(batch_pred)
+        if config['binary_classification']:
+            batch_pred = batch_out[1]
+        else:
+            batch_pred = int(batch_out.argmax())
 
         fname_list.extend(track_id)
         pred_list.extend([batch_pred])
