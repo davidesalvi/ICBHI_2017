@@ -21,11 +21,11 @@ def main(config, device):
 
     logger.info('Set up the model...')
 
-    if config['binary_classification']:
-        config['model_name'] = f"{config['model_arch'].upper()}_binary_{config['feature_set']}_{config['win_len']}sec.pth"
+    config['model_name'] = f"{config['model_arch'].upper()}_{config['classification_type']}_{config['feature_set']}_{config['win_len']}sec.pth"
+
+    if config['classification_type'] == 'binary':
         config['num_classes'] = 2
-    else:
-        config['model_name'] = f"{config['model_arch'].upper()}_multi_{config['feature_set']}_{config['win_len']}sec.pth"
+    elif config['classification_type'] == 'multi':
         config['num_classes'] = 8
 
     models_dict = {'MelSpec': MelSpec_model, 'LogSpec': LogSpec_model, 'MFCC': MFCC_model, 'LFCC': LFCC_model}
@@ -60,7 +60,7 @@ def main(config, device):
     label_dict = {'Healthy': 0, 'COPD': 1, 'URTI': 2, 'Asthma': 3, 'LRTI': 4, 'Bronchiectasis': 5, 'Pneumonia': 6, 'Bronchiolitis': 7}
     df_label['label'] = df_label['diagnosis'].map(label_dict)
 
-    if config['binary_classification']:
+    if config['classification_type'] == 'binary':
         df_label['label'] = df_label['label'].apply(lambda x: 1 if x != 0 else 0)
 
     df_merge = pd.merge(df, df_label, on='patient', how='left')
@@ -185,7 +185,7 @@ if __name__ == '__main__':
     args.add_argument('--model_arch', type=str, default='ResNet', help='Model architecture', choices=['ResNet', 'LCNN'])
     args.add_argument('--train_model', type=bool, default=True)
     args.add_argument('--eval_model', type=bool, default=True)
-    args.add_argument('--binary_classification', type=bool, default=False, help='Binary or multi-class classification')
+    args.add_argument('--classification_type', type=str, default='binary', help='Binary or multi-class classification', choices=['binary', 'multi'])
     args.add_argument('--win_len', type=float, default=5.0, help='Length of the audio window to be analyzed (s)')
     args = args.parse_args()
 
@@ -198,10 +198,10 @@ if __name__ == '__main__':
     config['model_arch'] = args.model_arch
     config['train_model'] = args.train_model
     config['eval_model'] = args.eval_model
-    config['binary_classification'] = args.binary_classification
+    config['classification_type'] = args.classification_type
     config['win_len'] = args.win_len
 
     seed_everything(config['seed'])
-    device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    device = 'cuda:1' if torch.cuda.is_available() else 'cpu'
 
     main(config, device)
