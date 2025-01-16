@@ -1,14 +1,10 @@
 import os
-import torch
-import random
-import GPUtil
-import yaml
+
 import matplotlib.pyplot as plt
 import numpy as np
-from sklearn.metrics import roc_curve, auc, confusion_matrix
 import pandas as pd
-import torch.nn as nn
-from sklearn.metrics import classification_report, balanced_accuracy_score
+from sklearn.metrics import balanced_accuracy_score
+from sklearn.metrics import roc_curve, auc, confusion_matrix
 
 
 def compute_eer_auc(labels, pred):

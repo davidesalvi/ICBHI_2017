@@ -202,6 +202,7 @@ if __name__ == '__main__':
     config['win_len'] = args.win_len
 
     seed_everything(config['seed'])
-    device = 'cuda:1' if torch.cuda.is_available() else 'cpu'
+    device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
     main(config, device)
+
